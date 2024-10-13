@@ -469,7 +469,14 @@ Push sideline overlays on `lsp-ui-sideline--ovs'."
                  (msg (replace-regexp-in-string " " " " msg))
                  (len (length msg))
                  (level (flycheck-error-level e))
-                 (face (if (eq level 'info) 'success level))
+                 ;; (face (if (eq level 'info) 'success level))
+                 ;; Replace by custom code from here: https://github.com/emacs-lsp/lsp-ui/issues/761
+                 (face (let ((local-face
+                              (flycheck-error-level-error-list-face
+                               (if (eq level 'info) 'success level))))
+                         (if (facep local-face)
+                             local-face
+                           (error "Could not determine face for %s" level))))
                  (margin (lsp-ui-sideline--margin-width))
                  (msg (progn (add-face-text-property 0 len 'lsp-ui-sideline-global nil msg)
                              (add-face-text-property 0 len face nil msg)
